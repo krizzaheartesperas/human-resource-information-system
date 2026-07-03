@@ -1,0 +1,891 @@
+@import "../../node_modules/tailwindcss/index.css";
+
+/* App theme is toggled via `html.light` / `html.dark` (ThemeProvider), not OS preference */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Optional brand font (Maya / PayMaya cards use "Tuka"). Drop the font file in `public/fonts/Tuka.woff2`. */
+@font-face {
+  font-family: "Tuka";
+  src: url("/fonts/Tuka.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 100 900;
+}
+
+/* Workzen HRIS – Company palette theme
+   Gargoyle Gas  #FFE14E
+   Space Cadet   #192853
+   Alice Blue    #EFF8FF
+*/
+:root {
+  /* Light mode: white background, Space Cadet text, Gargoyle Gas accents */
+  --background: #f1f3f7;
+  --foreground: #192853;
+  --card: #ffffff;
+  --card-foreground: #192853;
+  --popover: #ffffff;
+  --popover-foreground: #192853;
+  --primary: #192853; /* main brand (Space Cadet) */
+  --primary-foreground: #eff8ff;
+  --secondary: #f8fafc;
+  --secondary-foreground: #192853;
+  --muted: #f8fafc;
+  --muted-foreground: #4b5877;
+  --accent: #ffe14e; /* Gargoyle Gas accent */
+  --accent-foreground: #192853;
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #192853;
+  --radius: 1rem;
+}
+
+.dark {
+  /* Dark mode: Space Cadet background, Alice Blue text, Gargoyle Gas accent */
+  --background: #0f1828;
+  --foreground: #eff8ff;
+  --card: #192853;
+  --card-foreground: #eff8ff;
+  --popover: #131d30;
+  --popover-foreground: #eff8ff;
+  --primary: #ffe14e; /* bright accent on dark */
+  --primary-foreground: #192853;
+  --secondary: #1f2940;
+  --secondary-foreground: #eff8ff;
+  --muted: #1f2940;
+  --muted-foreground: #c3d0ea;
+  --accent: #ffe14e;
+  --accent-foreground: #192853;
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: #ffffff;
+  /* Slightly stronger outlines for dark UI (tables/cards/inputs) */
+  --border: #223153;
+  --input: #223153;
+  --ring: #ffe14e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand-deep: #161b30;
+  --font-sans: var(--font-rubik);
+  --font-mono: var(--font-geist-mono);
+  --font-maya-logo: "Tuka", var(--font-sans), system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 0.25rem);
+  --radius-md: calc(var(--radius) - 0.125rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.25rem);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.route-progress-shell {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.route-progress-shell.is-visible {
+  opacity: 1;
+}
+
+.route-progress-bar {
+  height: 4px;
+  width: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #f5c400 0%, #ffd949 55%, #ffe680 100%);
+  transition: transform 180ms ease-out;
+}
+
+.route-progress-glow {
+  position: absolute;
+  top: 0;
+  margin-left: -18px;
+  height: 4px;
+  width: 36px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(255, 230, 128, 0) 0%, rgba(255, 239, 178, 0.92) 48%, rgba(255, 230, 128, 0) 100%);
+  filter: blur(1px);
+  transition: left 180ms ease-out;
+}
+
+/* Global table baseline (including plain <table> not using ui/table.tsx) */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.875rem;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+table thead {
+  position: relative;
+}
+
+table thead::after {
+  content: "";
+  display: block;
+  height: 10px; /* detached/floating header effect */
+}
+
+table thead th {
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+  font-weight: 500 !important;
+  padding: 0.75rem 1rem !important;
+  text-align: left;
+  vertical-align: middle !important;
+  border: 0 !important;
+}
+
+/* Non-employee admin/manager table headers: compact uppercase layout */
+[data-user-role="HR_STAFF"] table thead th,
+[data-user-role="HR_ADMIN"] table thead th,
+[data-user-role="DEPARTMENT_MANAGER"] table thead th,
+[data-user-role="MANAGER"] table thead th,
+[data-user-role="HR_MANAGER"] table thead th,
+[data-user-role="AUDITOR"] table thead th,
+[data-user-role="EXECUTIVE"] table thead th,
+[data-user-role="SUPER_ADMIN"] table thead th,
+[data-user-role="SYSTEM_ADMIN"] table thead th {
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.06em !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  height: 2.5rem !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+[data-user-role="HR_STAFF"] table thead tr,
+[data-user-role="HR_ADMIN"] table thead tr,
+[data-user-role="DEPARTMENT_MANAGER"] table thead tr,
+[data-user-role="MANAGER"] table thead tr,
+[data-user-role="HR_MANAGER"] table thead tr,
+[data-user-role="AUDITOR"] table thead tr,
+[data-user-role="EXECUTIVE"] table thead tr,
+[data-user-role="SUPER_ADMIN"] table thead tr,
+[data-user-role="SYSTEM_ADMIN"] table thead tr {
+  height: 2.5rem !important;
+}
+
+table thead th:first-child {
+  border-top-left-radius: 0.75rem;
+  border-bottom-left-radius: 0.75rem;
+}
+
+table thead th:last-child {
+  border-top-right-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+
+table tbody td {
+  padding: 0.75rem 1rem !important;
+  text-align: left;
+  vertical-align: middle !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+table td,
+table th {
+  box-shadow: none !important;
+}
+
+table tbody tr {
+  background: transparent !important;
+}
+
+table tbody tr:hover td {
+  background: #f9fafb !important;
+  transition: background-color 0.2s ease;
+}
+
+.dark table tbody td {
+  background: #161b30 !important;
+  color: #e2e8f0 !important;
+  border-bottom: 1px solid #223153 !important;
+}
+
+.dark table tbody tr:hover td {
+  background: #1c2541 !important;
+}
+
+.dark table tbody tr {
+  background: transparent !important;
+}
+
+/* If a Card is used as a table wrapper, visually flatten it to table-only */
+.ui-card:has(table) {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Remove outer table stroke from common wrappers while keeping row dividers */
+div:has(> table),
+div:has(> .overflow-auto > table),
+div:has(> .scrollbar-hide > table),
+div:has(table) {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Ensure light mode page sections that host tables stay pure white */
+:root section:has(table),
+:root article:has(table),
+:root main:has(table) {
+  background-color: transparent;
+}
+
+.dark body {
+  /* Soft vignette using Space Cadet + Gargoyle Gas glow */
+  background:
+    radial-gradient(140% 120% at 20% 0%, rgba(255, 225, 78, 0.12) 0%, transparent 55%),
+    radial-gradient(110% 110% at 80% 100%, rgba(255, 225, 78, 0.1) 0%, transparent 50%),
+    #0f1828;
+}
+
+/* Today's schedule items: ensure blue text on yellow cards in both themes */
+.schedule-item,
+.schedule-item span {
+  color: #192853;
+}
+.schedule-item button {
+  color: #192853;
+}
+
+/* Date input: force rounded-3xl so it visually matches the Reason field pills. */
+.date-input {
+  border-radius: 1.5rem !important; /* Tailwind rounded-3xl */
+}
+.date-input:focus-visible {
+  outline: none;
+  border-color: hsl(199 89% 48% / 0.6);
+  box-shadow: 0 0 0 2px hsl(199 89% 48% / 0.25);
+}
+
+.dark .date-input:focus-visible {
+  border-color: hsl(199 89% 48% / 0.7);
+  box-shadow: 0 0 0 2px hsl(199 89% 48% / 0.3);
+}
+
+/* Date picker indicator: keep the calendar icon visible in dark mode. */
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: invert(1) brightness(1.25);
+  cursor: pointer;
+}
+
+.dark input[type="date"]::-webkit-inner-spin-button,
+[data-theme="dark"] input[type="date"]::-webkit-inner-spin-button,
+.dark input[type="date"]::-webkit-clear-button,
+[data-theme="dark"] input[type="date"]::-webkit-clear-button {
+  filter: invert(1) brightness(1.2);
+}
+
+/* Time input: keep single native clock icon and reserve right space. */
+.time-input {
+  padding-right: 2.25rem;
+}
+
+.dark input[type="time"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: invert(1) brightness(1.25);
+  cursor: pointer;
+}
+
+
+/* Hide scrollbar while keeping scroll behavior (all browsers incl. Windows) */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+.scrollbar-hide::-webkit-scrollbar-track,
+.scrollbar-hide::-webkit-scrollbar-thumb,
+.scrollbar-hide::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Pill-style scrollbar: dark track, light rounded thumb, vertical only */
+.scrollbar-pill {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb #374151; /* thumb track (Firefox) */
+}
+.scrollbar-pill::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-pill::-webkit-scrollbar-track {
+  background: #374151;
+  border-radius: 9999px;
+  margin: 4px 0;
+}
+.scrollbar-pill::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border: 2px solid #374151;
+  border-radius: 9999px;
+}
+
+/* When both classes are present, hide scrollbar completely (override pill styles) */
+.scrollbar-pill.scrollbar-hide {
+  scrollbar-width: none;
+}
+.scrollbar-pill.scrollbar-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+.scrollbar-pill.scrollbar-hide::-webkit-scrollbar-track,
+.scrollbar-pill.scrollbar-hide::-webkit-scrollbar-thumb,
+.scrollbar-pill.scrollbar-hide::-webkit-scrollbar-button {
+  display: none;
+}
+.scrollbar-pill::-webkit-scrollbar-thumb:hover {
+  background: #f3f4f6;
+}
+
+/* Complaints status selector: hide scrollbar where supported */
+.complaint-status-select {
+  scrollbar-width: none;
+}
+.complaint-status-select::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Input fields: white outline in dark mode; yellow (accent) focus ring in both themes */
+
+/* Performance chart line animation */
+.performance-line {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: performance-line-draw 2200ms ease-out forwards;
+}
+
+@keyframes performance-line-draw {
+  from {
+    stroke-dashoffset: 300;
+    opacity: 0.2;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* Performance chart active point + tooltip animation */
+.performance-tooltip {
+  animation: performance-tooltip-float 2200ms ease-in-out infinite;
+}
+
+.performance-dot {
+  box-shadow: 0 0 0 0 rgba(255, 225, 78, 0.55);
+  animation: performance-dot-pulse 2200ms ease-out infinite;
+}
+
+@keyframes performance-tooltip-float {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -4px);
+  }
+  100% {
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes performance-dot-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 225, 78, 0.55);
+  }
+  70% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 10px rgba(255, 225, 78, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 225, 78, 0);
+  }
+}
+
+
+.dark input,
+.dark select,
+.dark textarea {
+  border-color: rgba(255, 255, 255, 0.85);
+}
+input:focus-visible:not(.chat-message-input):not(.topbar-search-input),
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* Animated native dropdown icons across app */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 2.25rem !important;
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.5 7.5L10 12.5L14.5 7.5' stroke='%236B7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  transition: background-position 180ms ease, box-shadow 180ms ease;
+}
+
+select:focus,
+select:focus-visible {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.5 12.5L10 7.5L14.5 12.5' stroke='%236B7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  animation: select-chevron-bounce 180ms ease;
+}
+
+@keyframes select-chevron-bounce {
+  0% {
+    background-position: right 0.75rem center;
+  }
+  50% {
+    background-position: right 0.75rem calc(50% - 1px);
+  }
+  100% {
+    background-position: right 0.75rem center;
+  }
+}
+
+/* Topbar search inputs: no yellow inner ring; parent wrapper shows blue border on focus */
+.topbar-search-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.chat-message-input:focus-visible,
+.chat-message-input:focus,
+.chat-message-input:active {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Dark mode: brighter text and placeholder in inputs for visibility */
+.dark input,
+.dark select,
+.dark textarea {
+  color: #ffffff;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(255, 255, 255, 0.82);
+}
+.dark select option {
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+/* Prevent browser autofill from forcing white input backgrounds. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+input:autofill,
+textarea:autofill,
+select:autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--background) inset !important;
+  box-shadow: 0 0 0 1000px var(--background) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground) !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Stronger dark override for Chrome/Edge autofill in form fields. */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark textarea:-webkit-autofill,
+.dark textarea:-webkit-autofill:hover,
+.dark textarea:-webkit-autofill:focus,
+.dark select:-webkit-autofill,
+.dark select:-webkit-autofill:hover,
+.dark select:-webkit-autofill:focus,
+.dark input:autofill,
+.dark textarea:autofill,
+.dark select:autofill,
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus,
+[data-theme="dark"] textarea:-webkit-autofill,
+[data-theme="dark"] textarea:-webkit-autofill:hover,
+[data-theme="dark"] textarea:-webkit-autofill:focus,
+[data-theme="dark"] select:-webkit-autofill,
+[data-theme="dark"] select:-webkit-autofill:hover,
+[data-theme="dark"] select:-webkit-autofill:focus,
+[data-theme="dark"] input:autofill,
+[data-theme="dark"] textarea:autofill,
+[data-theme="dark"] select:autofill {
+  background-color: #1b223d !important;
+  -webkit-box-shadow: 0 0 0 1000px #1b223d inset !important;
+  box-shadow: 0 0 0 1000px #1b223d inset !important;
+  -webkit-text-fill-color: #f8fafc !important;
+  color: #f8fafc !important;
+  caret-color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 6px;
+  height: 10px;
+  border-radius: 9999px;
+  opacity: 0.9;
+  background: hsl(262 83% 58%);
+  animation: confetti-fall 1.2s ease-out forwards;
+}
+
+.confetti-piece:nth-child(3n) {
+  background: hsl(160 84% 39%);
+}
+
+.confetti-piece:nth-child(4n) {
+  background: hsl(21 90% 55%);
+}
+
+.confetti-piece:nth-child(5n) {
+  background: hsl(199 89% 48%);
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate3d(0, -20px, 0) rotateZ(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 260px, 0) rotateZ(260deg);
+    opacity: 0;
+  }
+}
+
+/* Leave Management role panels:
+   Light mode = pale blue cards, Dark mode = deep blue cards. */
+.leave-management-theme .pt-1.pb-2.min-h-\[72vh\] {
+  border-radius: 2rem !important;
+  border: 1px solid #e2e8f0 !important;
+  background: var(--background) !important;
+  color: #192853 !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Leave module: force legacy white/pale-blue utility classes to follow theme background */
+.leave-management-theme .bg-white {
+  background-color: var(--background) !important;
+}
+
+.leave-management-theme [class*="bg-\\[\\#eaf4ff\\]"] {
+  background-color: var(--background) !important;
+}
+
+.leave-management-theme [class*="border-\\[\\#9ac4ff\\]"] {
+  border-color: #e2e8f0 !important;
+}
+
+.dark .leave-management-theme .pt-1.pb-2.min-h-\[72vh\] {
+  background: #1b223d !important;
+  color: #f8fafc !important;
+  border: 1px solid #2e3d62 !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.10) !important;
+}
+
+/* Employee dashboard: in LIGHT mode, override slate text to follow the card text color. */
+:not(.dark) .employee-dash-card .text-slate-50,
+:not(.dark) .employee-dash-card .text-slate-100,
+:not(.dark) .employee-dash-card .text-slate-200,
+:not(.dark) .employee-dash-card .text-slate-300,
+:not(.dark) .employee-dash-card .text-slate-400,
+:not(.dark) .employee-dash-card .text-slate-500,
+:not(.dark) .employee-dash-card .text-slate-600,
+:not(.dark) .employee-dash-card .text-slate-700,
+:not(.dark) .employee-dash-card .text-slate-800,
+:not(.dark) .employee-dash-card .text-slate-900 {
+  color: inherit !important;
+}
+
+/* Employee dashboard (final): Light mode readability */
+:not(.dark) .employee-dash-card [class*="bg-[#1B223D]"] [class*="text-slate-"] {
+  color: #e2e8f0 !important;
+}
+:not(.dark) .employee-dash-card [class*="bg-[#020617]"] [class*="text-slate-"] {
+  color: #e2e8f0 !important;
+}
+:not(.dark) .employee-dash-card [class*="bg-[#0f172a]"] [class*="text-slate-"] {
+  color: #e2e8f0 !important;
+}
+
+:not(.dark) .employee-dash-card [class*="bg-white/10"] {
+  background-color: rgba(25, 40, 83, 0.06) !important;
+}
+:not(.dark) .employee-dash-card [class*="bg-white/20"] {
+  background-color: rgba(25, 40, 83, 0.09) !important;
+}
+
+/* Employee dashboard (final, no :not): force slate text to follow card text color.
+   Also restore slate text brightness inside dark inner surfaces so tooltips/menus remain readable. */
+.employee-dash-card .text-slate-50,
+.employee-dash-card .text-slate-100,
+.employee-dash-card .text-slate-200,
+.employee-dash-card .text-slate-300,
+.employee-dash-card .text-slate-400,
+.employee-dash-card .text-slate-500,
+.employee-dash-card .text-slate-600,
+.employee-dash-card .text-slate-700,
+.employee-dash-card .text-slate-800,
+.employee-dash-card .text-slate-900 {
+  color: inherit !important;
+}
+
+.employee-dash-card [class*="bg-[#1B223D]"] [class*="text-slate-"],
+.employee-dash-card [class*="bg-[#020617]"] [class*="text-slate-"],
+.employee-dash-card [class*="bg-[#0f172a]"] [class*="text-slate-"] {
+  color: #e2e8f0 !important;
+}
+
+.employee-dash-card [class*="bg-white/10"] {
+  background-color: rgba(25, 40, 83, 0.06) !important;
+}
+.employee-dash-card [class*="bg-white/20"] {
+  background-color: rgba(25, 40, 83, 0.09) !important;
+}
+
+/* Exceptions: inside dark inner surfaces, keep slate text bright in LIGHT mode. */
+:not(.dark) .employee-dash-card [class*="bg-[#1B223D]"] [class*="text-slate-"] {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+:not(.dark) .employee-dash-card [class*="bg-[#020617]"] [class*="text-slate-"] {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+:not(.dark) .employee-dash-card [class*="bg-[#0f172a]"] [class*="text-slate-"] {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* Light mode: dark-mode "bg-white/10" blocks become too faint on white cards.
+   Disabled: broken escaped selectors below (bg-white\\/10, bg-white\\/20)
+:not(.dark) .employee-dash-card .bg-white\\/10 {
+  background-color: rgba(25, 40, 83, 0.06) !important;
+}
+
+:not(.dark) .employee-dash-card .bg-white\\/20 {
+  background-color: rgba(25, 40, 83, 0.09) !important;
+}
+
+*/
+
+/* Performance Overview: bar rise + active badge (employee dashboard) */
+@keyframes perf-bar-rise {
+  from {
+    transform: scaleY(0);
+    opacity: 0.65;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes perf-badge-pop {
+  from {
+    transform: translate(-50%, 6px) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes perf-grid-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-perf-bar-fill {
+  transform-origin: bottom center;
+  animation: perf-bar-rise 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--perf-bar-delay, 0ms);
+}
+
+.animate-perf-badge {
+  animation: perf-badge-pop 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+  animation-delay: var(--perf-badge-delay, 0ms);
+}
+
+.animate-perf-chart-grid {
+  animation: perf-grid-fade 0.4s ease-out both;
+}
+
+@keyframes perf-metric-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-perf-metric {
+  animation: perf-metric-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-perf-bar-fill,
+  .animate-perf-badge,
+  .animate-perf-chart-grid,
+  .animate-perf-metric,
+  .animate-cal-header,
+  .animate-cal-day,
+  .animate-cal-tabs,
+  .animate-cal-event-row,
+  .animate-cal-empty {
+    animation: none !important;
+  }
+}
+
+/* Employee dashboard — Calendar / schedule card */
+@keyframes cal-header-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cal-day-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cal-tabs-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cal-row-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cal-empty-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-cal-header {
+  animation: cal-header-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-cal-day {
+  animation: cal-day-in 0.42s cubic-bezier(0.34, 1.15, 0.64, 1) both;
+  animation-delay: var(--cal-day-delay, 0ms);
+}
+
+.animate-cal-tabs {
+  animation: cal-tabs-in 0.4s ease-out both;
+}
+
+.animate-cal-event-row {
+  animation: cal-row-in 0.42s ease-out both;
+  animation-delay: var(--cal-row-delay, 0ms);
+}
+
+.animate-cal-empty {
+  animation: cal-empty-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Fix for browser autofill forcing white background in dark mode */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #090e1a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Sidebar active items use yellow in both themes, so keep text/icons dark for contrast. */
+#app-sidebar .bg-\[\#FFE14E\],
+#app-sidebar .bg-\[\#FFE14E\] * {
+  color: #111827 !important;
+}

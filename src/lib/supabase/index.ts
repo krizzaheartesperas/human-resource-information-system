@@ -1,0 +1,28 @@
+export { supabase } from "./client";
+export type { Database } from "./client";
+export type {
+  DepartmentRow,
+  DepartmentInsert,
+  DepartmentUpdate,
+  EmployeeRow,
+  EmployeeInsert,
+  EmployeeUpdate,
+  JobHistoryRow,
+  JobHistoryInsert,
+  JobHistoryUpdate,
+  LeaveRequestRow,
+  LeaveRequestInsert,
+  LeaveRequestUpdate,
+  LeaveBalanceRow,
+  LeaveBalanceInsert,
+  LeaveBalanceUpdate,
+  WorkflowRequestRow,
+  WorkflowRequestInsert,
+  WorkflowRequestUpdate,
+  AttendanceRow,
+  AttendanceInsert,
+  AttendanceUpdate,
+  AuditLogRow,
+  AuditLogInsert,
+  AuditLogUpdate,
+} from "./client";

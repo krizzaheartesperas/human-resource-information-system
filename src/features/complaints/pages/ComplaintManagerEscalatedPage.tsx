@@ -1,0 +1,3 @@
+import ComplaintManagerEscalatedPageComponent from "@/features/complaints/components/ComplaintManagerEscalatedPage";
+
+export const ComplaintManagerEscalatedPage = ComplaintManagerEscalatedPageComponent;

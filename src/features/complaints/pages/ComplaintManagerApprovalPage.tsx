@@ -1,0 +1,3 @@
+import ComplaintManagerApprovalPageComponent from "@/features/complaints/components/ComplaintManagerApprovalPage";
+
+export const ComplaintManagerApprovalPage = ComplaintManagerApprovalPageComponent;

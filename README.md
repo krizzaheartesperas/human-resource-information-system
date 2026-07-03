@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HRIS System – Web App
 
-## Getting Started
+Human Resource Information System (internship project). Built with **Next.js**, **shadcn/ui**, and **tweakcn**-friendly theme. Backend (Spring Boot) and mobile (Android) to follow.
 
-First, run the development server:
+## Roles (no Payroll)
+
+- **HR Admin** – full access, user/role management, audit logs  
+- **HR Staff** – manage employee records, create/process requests  
+- **Manager** – approve requests for their team, view team info  
+- **Employee** – view own profile, submit requests  
+
+## Tech stack
+
+- **Frontend:** Next.js 16 (App Router), TypeScript, Tailwind v4, shadcn-style UI (Button, Card, Table, Tabs, Dialog, Badge, Input, Label)
+- **Theme:** CSS variables in `src/app/globals.css` (neutral + corporate blue), ready for tweakcn
+- **Data:** Mock data in `src/lib/mock.ts` (replace with API later); Supabase (Postgres) tables in `supabase/migrations/`, client in `src/lib/supabase`.
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). You’ll see the dashboard. Use **Sign out** to go to the login page (`/auth/login`). Login is UI-only for now (any email/password).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | Description |
+|-------|-------------|
+| `/` | Dashboard – Total Employees, Pending Requests, Departments |
+| `/employees` | Employee list with search, “Add Employee” dialog |
+| `/employees/[id]` | Employee profile – Personal, Employment, Job History (effective-dated) |
+| `/departments` | Departments and managers |
+| `/leave` | Leave management – requests (workflow) and balances by type |
+| `/requests` | My Requests / To Approve (workflow placeholders) |
+| `/audit` | Audit log (HR Admin; wire to API later) |
+| `/auth/login` | Login (wire to Spring Boot auth later) |
 
-## Learn More
+## Next steps
 
-To learn more about Next.js, take a look at the following resources:
+1. **Backend:** Spring Boot REST API + Supabase (Postgres). Implement auth, RBAC, effective-dated employee/job/comp history, workflow_requests, audit_logs.
+2. **Wire frontend:** Replace `src/lib/mock.ts` with `fetch`/API client to your backend.
+3. **Auth:** Protect `(dashboard)` routes; use token from login; optional Supabase Auth or Spring Security.
+4. **Mobile:** Reuse same API from Android Studio.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Supabase setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Project name in Supabase: **human-resource-information-system**.
 
-## Deploy on Vercel
+1. Create a project at [supabase.com](https://supabase.com) (or use your existing **human-resource-information-system** project).
+2. Copy `.env.local.example` to `.env.local` and set:
+   - `NEXT_PUBLIC_SUPABASE_URL` = Project URL (Settings → API)
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = anon public key (Settings → API)
+3. Create tables: in Supabase Dashboard go to **SQL Editor**, open `supabase/migrations/20250302000000_create_hris_tables.sql`, and run it. Or use Supabase CLI: `npx supabase link` then `npx supabase db push`.
+4. Tables: `departments`, `employees`, `job_history`, `leave_requests`, `leave_balances`, `workflow_requests`, `attendance`, `audit_logs`. Revise the migration later if needed.
+5. In app: `import { supabase } from "@/lib/supabase";` then e.g. `supabase.from("employees").select("*")`.
+6. **SSO handoff (Recruitment → HRIS):** Run migration `20260418120000_sso_handoff_tickets_and_audit.sql`. Recruitment inserts into `sso_handoff_tickets` (SHA-256 of raw ticket as `secret_hash`, `user_id`, `expires_at`). Users are sent to `/auth/consume?ticket=…&next=…`. Server needs `SUPABASE_SERVICE_ROLE_KEY`.
+7. **Cross-app URLs (optional):** `NEXT_PUBLIC_RECRUITMENT_URL` (no trailing slash), `NEXT_PUBLIC_RECRUITMENT_ENTRY_PATH` (default `/dashboard`), `NEXT_PUBLIC_HRIS_URL` (used when generating magic-link `redirectTo`). For local dev, HRIS origin can be inferred from the request if `NEXT_PUBLIC_HRIS_URL` is unset.
+8. **SSO fallback:** If GoTrue redirect allowlists block magic-link returns, set `NEXT_PUBLIC_SSO_MAGICLINK_FALLBACK=true` to use in-app `verifyOtp` instead (dev only; see `src/lib/auth/ssoSessionStrategy.ts`).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── (dashboard)/          # Protected area (sidebar + topbar)
+│   │   ├── layout.tsx
+│   │   ├── page.tsx          # Dashboard
+│   │   ├── employees/
+│   │   ├── departments/
+│   │   ├── requests/
+│   │   └── audit/
+│   ├── auth/login/
+│   ├── globals.css           # Theme (tweakcn/shadcn vars)
+│   └── layout.tsx
+├── components/
+│   ├── layout/               # Sidebar, Topbar
+│   └── ui/                   # Button, Card, Table, Tabs, Dialog, etc.
+└── lib/
+    ├── utils.ts              # cn()
+    └── mock.ts               # Replace with API
+```
