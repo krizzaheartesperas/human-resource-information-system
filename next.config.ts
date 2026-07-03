@@ -38,7 +38,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     optimizePackageImports: [
-      "lucide-react",
       "recharts",
       "@radix-ui/react-dialog",
       "@radix-ui/react-tabs",
@@ -47,11 +46,11 @@ const nextConfig: NextConfig = {
     ],
   },
   modularizeImports: {
-    "lucide-react": {
-      transform: "lucide-react/dist/esm/icons/{{kebabCase member}}",
-      skipDefaultConversion: true,
-    },
+  "lucide-react": {
+    transform: "lucide-react/dist/esm/icons/{{kebabCase member}}",
+    skipDefaultConversion: true,
   },
+ },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 7,
