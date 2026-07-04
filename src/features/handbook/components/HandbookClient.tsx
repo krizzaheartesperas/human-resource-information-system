@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { EmployeeModuleTopbar } from "@/components/layout/EmployeeModuleTopbar";
-import { EmployeeSectionHeader } from "@/components/layout/EmployeeSectionHeader";
+
 import { HANDBOOK_CONTENT } from "../data/handbookContent";
 import { HandbookSection } from "./HandbookSection";
 import { HandbookSidebar } from "./HandbookSidebar";
 import { HandbookAcknowledgment } from "./HandbookAcknowledgment";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Search, FileCheck } from "lucide-react";
+import { BookOpen, FileCheck } from "lucide-react";
 
 export function HandbookClient() {
   const [activeSection, setActiveSection] = useState(HANDBOOK_CONTENT[0].id);
