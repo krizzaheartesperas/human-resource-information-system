@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
         .select(profileCols.join(", "))
         .in("user_id", userIds);
       if (!error) {
-        profiles = (data as JsonObject[]) ?? [];
+        profiles = (data as unknown as JsonObject[]) ?? [];
         profilesErrorMessage = null;
         break;
       }
