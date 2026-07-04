@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
     }
     const { data, error, count } = await query;
     if (!error) {
-      rows = (data as JsonObject[]) ?? [];
+      rows = (data as unknown as JsonObject[]) ?? [];
       totalCount = count ?? null;
       employeesError = null;
       break;
