@@ -141,7 +141,7 @@ export function TeamOvertimeRequestsTable({ currentUser }: { currentUser: Curren
           .select(employeeCols.join(", "))
           .in("id", ids);
         if (!error) {
-          emps = ((data as EmployeeRow[] | null) ?? []);
+          emps = ((data as unknown as EmployeeRow[]) ?? []);
           empErr = null;
           break;
         }
