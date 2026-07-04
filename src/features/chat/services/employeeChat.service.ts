@@ -276,7 +276,10 @@ export function sendEmployeeChatAttachment(input: {
               id: newId("msg"),
               senderId: input.employeeId,
               senderName: input.employeeName,
-              text: input.attachment.kind === "image" ? "Sent an image" : "Sent a document",
+              text:
+              input.attachment?.kind === "image"
+                ? "Sent an image"
+                : "Sent a document",
               sentAt: new Date().toISOString(),
               read: true,
               attachment: input.attachment,
