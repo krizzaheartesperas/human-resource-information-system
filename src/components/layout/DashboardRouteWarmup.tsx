@@ -68,6 +68,7 @@ export default function DashboardRouteWarmup() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    
     const conn = (navigator as any).connection as
   | {
       saveData?: boolean;
