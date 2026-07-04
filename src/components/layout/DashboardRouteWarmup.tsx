@@ -68,9 +68,12 @@ export default function DashboardRouteWarmup() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const conn = navigator.connection as
-      | { saveData?: boolean; effectiveType?: string }
-      | undefined;
+    const conn = (navigator as any).connection as
+  | {
+      saveData?: boolean;
+      effectiveType?: string;
+    }
+  | undefined;
     const onConstrainedNetwork =
       conn?.saveData === true ||
       conn?.effectiveType === "slow-2g" ||
