@@ -134,7 +134,7 @@ export function TeamCorrectionRequestsTable({ currentUser }: { currentUser: Curr
           .select(employeeCols.join(", "))
           .in("id", allPeople);
         if (!error) {
-          people = ((data as EmployeeRow[] | null) ?? []);
+          people = ((data as unknown as EmployeeRow[]) ?? []);
           peopleErr = null;
           break;
         }
