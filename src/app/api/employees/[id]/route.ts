@@ -40,7 +40,7 @@ function normalizeEmploymentStatus(raw: unknown): "ACTIVE" | "ONBOARDING" | "OFF
   return v === "ACTIVE" || v === "ONBOARDING" || v === "OFFBOARDED" ? v : null;
 }
 
-async function isRequesterSystemAdmin(supabase: ReturnType<typeof createClient>) {
+async function isRequesterSystemAdmin(supabase: SupabaseClient) {
   const {
     data: { user },
     error: authError,
