@@ -47,8 +47,10 @@ export function HandbookClient() {
     <div className="pb-10">
       <div className="mb-6 space-y-6">
         <EmployeeModuleTopbar 
-          searchPlaceholder="Search policies, guidelines, or FAQs..." 
-          onSearch={(query) => setSearchQuery(query)}
+          searchInputProps={{
+            value: searchQuery,
+            onChange: (e) => setSearchQuery(e.target.value),
+          }}
         />
         
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/20 via-background to-background p-6 border border-primary/10">
