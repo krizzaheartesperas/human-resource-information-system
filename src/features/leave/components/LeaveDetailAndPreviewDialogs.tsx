@@ -447,13 +447,13 @@ export function LeaveDetailAndPreviewDialogs({
               </DialogDescription>
             )}
           </DialogHeader>
-          {detailRequest && draftEditorActive && onSubmitLeaveDraft && leaveTypeOptions && draftBalanceRows ? (
+          {detailRequest && draftEditorActive && leaveTypeOptions && draftBalanceRows ? (
             <DraftLeaveDetailForm
               draft={detailRequest}
               leaveTypeOptions={leaveTypeOptions}
               draftBalanceRows={draftBalanceRows}
               detailDraftSubmitError={detailDraftSubmitError}
-              onSubmit={onSubmitLeaveDraft}
+              onSubmit={onSubmitLeaveDraft!}
               openDocPreview={openDocPreview}
             />
           ) : null}
