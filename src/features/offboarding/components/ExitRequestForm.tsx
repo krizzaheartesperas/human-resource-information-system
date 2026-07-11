@@ -74,7 +74,7 @@ export function ExitRequestForm({ user, onClose, onSubmitSuccess, initialValues 
     submissionDate: new Date().toLocaleDateString(),
     employeeName: user?.name || "Krizza Heart",
     employeeId: user?.employeeId || "EMP-2024-0512",
-    department: user?.department || "Product Development",
+    department: user?.departmentId || "Product Development",
     position: user?.jobTitle || "Senior Frontend Developer",
     reportingManager: "Michael Scott", // Mock
 
