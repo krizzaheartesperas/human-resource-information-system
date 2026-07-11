@@ -2166,7 +2166,7 @@ export default function LeavePage() {
           return;
         }
         // Prefer storage object path so private buckets can be resolved via signed URLs.
-        persistedDocUrl = uploadResult.path ?? uploadResult.publicUrl ?? persistedDocUrl;
+        persistedDocUrl = uploadResult.path ?? persistedDocUrl;
       }
 
       setPendingLeaveRequest(null);
