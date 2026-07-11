@@ -32,6 +32,7 @@ const stepBadgeStyles: Record<StepStatus, string> = {
   Completed: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
   "In Progress": "bg-blue-500/15 text-blue-700 dark:text-blue-300",
   Pending: "bg-slate-500/10 text-slate-500 dark:text-slate-400",
+  Blocked: "bg-red-500/15 text-red-700 dark:text-red-300",
 };
 
 function StepStatusIcon({ status }: { status: StepStatus }) {
