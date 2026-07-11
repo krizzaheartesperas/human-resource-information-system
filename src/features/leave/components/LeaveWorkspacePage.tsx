@@ -2072,7 +2072,7 @@ export default function LeavePage() {
           return;
         }
         persistedDocUrl = uploadResult.path ?? uploadResult.publicUrl ?? undefined;
-        persistedDocName = supportingDocument.name;
+        persistedDocUrl = uploadResult.path ?? undefined;
       }
 
       const submitterRole = resolveSubmitterRoleFromCurrentUser(currentUser);
