@@ -2071,7 +2071,6 @@ export default function LeavePage() {
           setNewLeaveError(`Failed to upload supporting document: ${uploadResult.error.message}`);
           return;
         }
-        persistedDocUrl = uploadResult.path ?? uploadResult.publicUrl ?? undefined;
         persistedDocUrl = uploadResult.path ?? undefined;
       }
 
