@@ -207,10 +207,28 @@ function defaultState(): EmployeeOffboardingState {
 function normalizeChecklist(tasks?: EmployeeOffboardingChecklistTask[]) {
   if (!tasks?.length) return seededChecklist();
   return tasks.map((task) => ({
-    owner: task.owner ?? (task.category.includes("Asset") || task.id === "hr-form" || task.id === "hr-exit" ? "You" : task.category.includes("HR") ? "HR Operations" : task.category.includes("Manager") ? "Reporting Manager" : task.category.includes("IT") ? "IT Security" : "Finance Team"),
-    ownerType: task.ownerType ?? (task.category === "Asset Return" || task.id === "hr-form" || task.id === "hr-exit" ? "employee" : "department"),
-    ...task,
-  }));
+  ...task,
+  owner:
+    task.owner ??
+    (task.category.includes("Asset") ||
+    task.id === "hr-form" ||
+    task.id === "hr-exit"
+      ? "You"
+      : task.category.includes("HR")
+        ? "HR Operations"
+        : task.category.includes("Manager")
+          ? "Reporting Manager"
+          : task.category.includes("IT")
+            ? "IT Security"
+            : "Finance Team"),
+  ownerType:
+    task.ownerType ??
+    (task.category === "Asset Return" ||
+    task.id === "hr-form" ||
+    task.id === "hr-exit"
+      ? "employee"
+      : "department"),
+}));
 }
 
 function normalizeActivities(activities?: EmployeeOffboardingActivity[]) {
