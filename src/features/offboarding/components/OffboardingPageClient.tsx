@@ -444,7 +444,7 @@ export default function OffboardingPageClient() {
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-slate-400 font-medium uppercase tracking-widest">Position / Department</span>
-                <span className="font-normal text-base">{`${currentUser.jobTitle || request?.position || "Position"} / ${currentUser.department || request?.department || "Department"}`}</span>
+                <span className="font-normal text-base">{`${currentUser.jobTitle || request?.position || "Position"} / ${request?.department || "Department"}`}</span>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-slate-400 font-medium uppercase tracking-widest">Exit Type</span>
