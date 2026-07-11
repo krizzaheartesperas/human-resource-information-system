@@ -242,10 +242,11 @@ function normalizeActivities(activities?: EmployeeOffboardingActivity[]) {
 
 function normalizeDocuments(documents?: EmployeeOffboardingDocument[]) {
   if (!documents?.length) return seededDocuments();
+
   return documents.map((doc) => ({
+    ...doc,
     required: doc.required ?? true,
     status: doc.status ?? "Pending",
-    ...doc,
   }));
 }
 
