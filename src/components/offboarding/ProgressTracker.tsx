@@ -3,7 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-type StepStatus = "Completed" | "In Progress" | "Pending";
+type StepStatus =
+  | "Completed"
+  | "In Progress"
+  | "Pending"
+  | "Blocked";
 
 export type OffboardingStep = {
   id: string;
