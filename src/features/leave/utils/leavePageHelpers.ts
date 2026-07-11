@@ -86,7 +86,10 @@ export function mapStatusToStep(status: LeaveStatus): 1 | 2 | 3 | 4 {
  * Role-aware status progression used by request detail dialogs.
  * This keeps the visual steps aligned with the revised approval matrix.
  */
-export function mapStatusToStepForRole(status: LeaveStatus, submitterRole: Role): 1 | 2 | 3 | 4 {
+export function mapStatusToStepForRole(
+  status: LeaveStatus,
+  submitterRole?: Role
+): 1 | 2 | 3 | 4 {
   if (status === "DRAFT") return 1;
   if (status === "REJECTED" || status === "CANCELLED" || status === "APPLIED" || status === "FINAL_APPROVED") {
     return 4;
