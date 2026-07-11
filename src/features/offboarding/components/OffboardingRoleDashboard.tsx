@@ -532,7 +532,7 @@ function SummaryCard({
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  value: number;
+  value: number | string;
   caption: string;
 }) {
   return (
