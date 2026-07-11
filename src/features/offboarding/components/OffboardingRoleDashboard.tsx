@@ -717,7 +717,8 @@ export function OffboardingRoleDashboard({
       const mappedCurrent = Math.min(6, Math.max(1, selectedCase.currentStep - 1));
       return {
         id: `${selectedCase.id}-${label}`,
-        label,
+        title: label,
+        responsible: "HR",
         status:
           selectedCase.status === "Completed" || stepNumber < mappedCurrent
             ? "Completed"
