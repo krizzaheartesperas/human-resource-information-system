@@ -712,7 +712,7 @@ export function OffboardingRoleDashboard({
       "Final Review",
       "Completed",
     ];
-    return base.map((label, index) => {
+    return base.map((label, index): OffboardingStep => {
       const stepNumber = index + 1;
       const mappedCurrent = Math.min(6, Math.max(1, selectedCase.currentStep - 1));
       return {
