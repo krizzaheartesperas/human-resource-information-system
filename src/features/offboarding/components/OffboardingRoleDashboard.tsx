@@ -6,7 +6,10 @@ import { EmployeeSectionHeader } from "@/components/layout/EmployeeSectionHeader
 import { AlertBanner } from "@/components/offboarding/AlertBanner";
 import { ApprovalStatus } from "@/components/offboarding/ApprovalStatus";
 import { DepartmentProgress } from "@/components/offboarding/DepartmentProgress";
-import { ProgressTracker } from "@/components/offboarding/ProgressTracker";
+import {
+  ProgressTracker,
+  type OffboardingStep,
+} from "@/components/offboarding/ProgressTracker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
