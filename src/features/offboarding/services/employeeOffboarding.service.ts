@@ -233,9 +233,10 @@ function normalizeChecklist(tasks?: EmployeeOffboardingChecklistTask[]) {
 
 function normalizeActivities(activities?: EmployeeOffboardingActivity[]) {
   if (!activities?.length) return defaultState().activities;
+
   return activities.map((entry) => ({
-    actor: entry.actor ?? (entry.type === "system" ? "System" : "You"),
     ...entry,
+    actor: entry.actor ?? (entry.type === "system" ? "System" : "You"),
   }));
 }
 
