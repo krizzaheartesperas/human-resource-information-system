@@ -2403,15 +2403,13 @@ Team Impact Notes: ${managerChangeTeamImpactNotes.trim() || "—"}`
               breadcrumb={
                 <>
                   <span className="truncate font-semibold">
-                    {currentUser.role === "HR_ADMIN" ? "Requests" : "Workflow Requests"}
+                    Workflow Requests
                   </span>
-                  {currentUser.role === "HR_ADMIN" ? null : (
-                    <>
                   <span className="shrink-0 opacity-70">&gt;</span>
-                  <span className="truncate font-semibold text-foreground">{headerTitle}</span>
-                    </>
-                  )}
-                </>
+                  <span className="truncate font-semibold text-foreground">
+                    {headerTitle}
+                  </span>
+                 </>
               }
               searchPlaceholder="Search workflow requests..."
             />
